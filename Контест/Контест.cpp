@@ -67,7 +67,7 @@ public:
 		}
 
 	}
-
+	
 	int showCountTasks(const string &stud)
 	{
 		if (StudentsBase.find(stud) == StudentsBase.end())
@@ -75,7 +75,7 @@ public:
 		else
 			return StudentsBase[stud].size();
 	}
-
+	
 	int pointsSumm(const string &stud, const PriceOfTasks &A)
 	{
 		if (StudentsBase.find(stud) == StudentsBase.end())
@@ -89,7 +89,7 @@ public:
 			return Sum;
 		}
 	}
-
+	
 	void showRezByTask(int n)
 	{
 		vector<pair<string, int>> Rez;
@@ -107,15 +107,25 @@ public:
 			if (Rez[i].second >= n)
 				cout << Rez[i].first << " " << Rez[i].second << endl;
 	}
-
+	
 	void TaskPartyHard(const PriceOfTasks &A)
 	{
-		vector<int, int> Rez(A.size());
+		pair<int, int> Help;
+		vector<pair<int, int>> Rez;
+		for (int i = 0; i < A.size(); i++)
+		{
+			Help.first = i + 1;
+			Help.second = 0;
+			Rez.push_back(Help);
+		}
 		map< string, vector<int> >::iterator cur;
 		for (cur = StudentsBase.begin(); cur != StudentsBase.end(); cur++)
 		{
 			for (int i = 0; i < (*cur).second.size(); i++)
-				Rez[((*cur).second)[i]]++;
+			{
+				//cout << (*cur).second.size() << " " << ((*cur).second)[i] << endl;
+				Rez[((*cur).second)[i] - 1].second++;
+			}
 		}
 		sort(Rez.begin(), Rez.end(), Compare_2);
 		for (int i = 0; i < Rez.size(); i++)
@@ -141,7 +151,7 @@ public:
 		for (int i = 0; i < Rez.size(); i++)
 			if (Rez[i].second >= n)
 				cout << Rez[i].first << " " << Rez[i].second << endl;
-		}
+	}
 };
 
 istream& operator >> (istream& is, PriceOfTasks &a)
@@ -164,6 +174,7 @@ void getCommand(PriceOfTasks &Razb, StudentsRezults &Catalog, string &adress)
 		{
 			infile >> name >> number;
 			Catalog.addRezult(name, number);
+			continue;
 		}
 		if (comm == "STUD_STAT")
 		{
@@ -172,23 +183,35 @@ void getCommand(PriceOfTasks &Razb, StudentsRezults &Catalog, string &adress)
 			Count = Catalog.showCountTasks(name);
 			Sum = Catalog.pointsSumm(name, Razb);
 			cout << ((Count == -1) ? 0 : Count) << " " << ((Sum == -1) ? 0 : Sum);
+			cout << endl;
+			continue;
 		}
 		if (comm == "STUDS_BY_TASKS")
 		{
 			Catalog.showRezByTask(0);
+			continue;
 		}
 		if (comm == "STUDS_BY_BALLS")
 		{
 			Catalog.showRezByPoints(0, Razb);
+			continue;
 		}
-		if (comm == "STUDS_MORE_TASKS_n")
+		if (comm == "STUDS_MORE_TASKS")
 		{
 			infile >> number;
 			Catalog.showRezByTask(number);
+			continue;
+		}
+		if (comm == "STUDS_MORE_BALLS")
+		{
+			infile >> number;
+			Catalog.showRezByPoints(number, Razb);
+			continue;
 		}
 		if (comm == "TASKS_BY_SOLUTIONS")
 		{
 			Catalog.TaskPartyHard(Razb);
+			continue;
 		}
 		cout << endl;
 	}
@@ -204,6 +227,5 @@ int main()
 	StudentsRezults Basa;
 	string adress = ("Contest.txt");
 	getCommand(A, Basa, adress);
-	cout << "Hello world!" << endl;
 	return 0;
 }
